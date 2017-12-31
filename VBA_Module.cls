@@ -175,7 +175,7 @@ Else
     ofxstream.WriteLine (OFX_SIGNONMSGSRSV1_HEADER)
     'Date format is 20031010000000.000[-5:EST]
     'dtDatetime = Worksheets("XLS2OFX").Range("StatementStartDate")
-    dtDatetime = ActiveSheet.Range("A2")
+    dtDatetime = Range("A2").Value
     StatementStartDate = Format(dtDatetime, "yyyymmdd") & "000000.000[-5:EST]"
     ofxstream.WriteLine (OFX_SIGNONMSGSRSV1_DTSERVER & StatementStartDate)
     ofxstream.WriteLine (OFX_SIGNONMSGSRSV1_FOOTER)
@@ -214,7 +214,7 @@ Else
     Set rgeTransactionList = CurrentWB.ActiveSheet.Range("A1")
     
     'Is Credit Card?
-    Dim tfCreditCard As Boolean
+    Dim tfCreditCard As Integer
         
     tfCreditCard = MsgBox("Is this statement a Credit Card?", vbYesNo)
     
@@ -235,7 +235,7 @@ Else
         'Record transaction in OFX format
         ofxstream.WriteLine (OFX_STMTTRN_HEADER)
         
-        If tfCreditCard Then
+        If tfCreditCard = 6 Then 'Yes was pressed
             If sTranAmount > 0 Then
                 ofxstream.WriteLine (OFX_STMTTRN_TRNTYPE & "CREDIT")
                 sTranAmount = sTranAmount * -1
@@ -247,11 +247,11 @@ Else
             End If
         Else
             If sTranAmount < 0 Then
-                ofxstream.WriteLine (OFX_STMTTRN_TRNTYPE & "CREDIT")
+                ofxstream.WriteLine (OFX_STMTTRN_TRNTYPE & "DEBIT")
                 sTranAmount = sTranAmount
                 FinalBalance = FinalBalance + Val(sTranAmount)
             Else
-                ofxstream.WriteLine (OFX_STMTTRN_TRNTYPE & "DEBIT")
+                ofxstream.WriteLine (OFX_STMTTRN_TRNTYPE & "CREDIT")
                 sTranAmount = sTranAmount
                 FinalBalance = FinalBalance - Val(sTranAmount)
             End If
@@ -292,8 +292,3 @@ Else
 End If
 
 End Sub
-
-
-
-
-
